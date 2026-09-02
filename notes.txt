@@ -55,3 +55,79 @@ yum module(for RHEL/centOS):install update or remove package
 	-m:specifies the module
 	-a:specifies the module argument
 	-b:runs with become (sudo) previleges
+
+---------------------------------------------
+==> Service Module
+
+Manages services (start/stop/restart).
+
+ansible webservers -b -m service -a "name=httpd state=started"
+ansible webservers -b -m service -a "name=httpd state=restarted"
+
+-------------------------------------
+
+==> Copy Module
+
+Copies files from control node to managed nodes.
+
+ansible webservers -m copy -a "src=/tmp/index.html dest=/var/www/html/index.html"
+
+=============================================
+
+Ansible Playbooks
+=================
+
+==> A Playbook is a YAML file that contains automation instructions for Ansible.
+
+==> Defines what tasks to perform.
+
+Benefits:
+
+Automates repetitive tasks.
+
+Maintains configuration consistency across environments.
+
+=========================
+
+YAML Basics before Ansible Playbook
+-----------------------------------
+
+==> Yet Another Markup Language (also known as YAML Ain’t Markup Language).
+
+==> Stores data in a format that is human-readable and machine-parsable.
+
+==> file extension for yaml is ==>  .yml or .yaml
+
+YAML Basic syntax understanding
+----------------------------------
+
+employee:
+  id: 4
+  name: Rohan
+  address:
+    area: Richmond town
+    city: Bengaluru
+    state: Karnataka
+    country: India
+  hobbies:
+   - poetry
+   - cricket
+   - running
+  
+student:
+  age: 16
+  name: Vishal
+  hobbies:
+   - cricket
+   - ps5
+   - music
+
+Note : indent spaces are very very crucial in yml file
+
+
+The Official YAML Website : https://yaml.org/
+
+To validate YML syntax : https://www.yamllint.com/
+
+Also we can do same with the help of AI tools
+
