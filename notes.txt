@@ -1,5 +1,30 @@
 TO SETUP ANSIBLE
 ================
+=>sudo useradd ansible:Creates a dedicated system user account named ansible that 
+	will run automated tasks.
+
+=>sudo passwd ansible:Sets a password for the ansible user account.
+
+=>sudo visudo:Safely opens the /etc/sudoers configuration file with syntax 
+	validation on save to prevent breaking sudo access.
+
+=>sudo grep -i "ansible" /etc/sudoers:Searches (grep) case-insensitively (-i) for 
+	lines containing ansible inside /etc/sudoers to verify your changes were saved.
+
+=>ansible ALL=(ALL)       NOPASSWD:ALL:Configuration line added via visudo) Grants 
+	the ansible user full administrative privileges to run any command as any user without prompting for a password. (Note: make sure it is NOPASSWD: ALL, not NOPASSWD:AL).
+
+=>sudo vi /etc/ssh/sshd_config:Opens the OpenSSH server daemon configuration file 
+	in the vi text editor (used here to ensure PasswordAuthentication yes is enabled so SSH keys can initially be transferred).
+
+=>sudo service sshd restart:Restarts the SSH daemon service to apply changes made 
+	to /etc/ssh/sshd_config.
+
+
+to setup now main server
+========================
+part1
+------
 =>sudo useradd ansible
 =>sudo passwd ansible
 =>sudo visudo
@@ -7,3 +32,54 @@ TO SETUP ANSIBLE
 =>ansible ALL=(ALL)       NOPASSWD:AL
 =>sudo vi /etc/ssh/sshd_config
 =>sudo service sshd restart
+
+
+part2
+-----
+=>sudo su ansible:Switches the current shell session to the ansible user.
+
+=>cd ~:Changes the working directory to the current user's home directory (/home/
+	ansible).
+
+=>sudo yum install python3:Installs the Python 3 runtime, which Ansible requires to 
+	run modules and parse playbooks.
+
+=>python3 --version:Prints the installed Python 3 version to confirm installation.
+
+=>sudo yum -y install python3-pip:Installs pip, the standard package installer for 
+	Python, bypassing prompts (-y).
+
+=>pip3 install ansible --user:Installs the Ansible package specifically inside the 
+	local user directory (~/.local/) without affecting global system packages.
+
+=>ansible --version:Displays Ansible's installed version, configuration paths, and 
+	Python binding to confirm it is operational.
+
+=>sudo mkdir /etc/ansible:Creates the global directory /etc/ansible where 
+	system-wide configuration and inventory files reside.
+
+=>sudo su ansible:
+
+=>ssh-keygen:Generates an asymmetric SSH key pair (private key id_rsa and 
+	public key id_rsa.pub) in ~/.ssh/.
+
+=>ssh-copy-id ansible@172.31.10.38:Copies the public key to the remote host at 
+	172.31.10.38 and appends it to /home/ansible/.ssh/authorized_keys for passwordless login.
+
+=>ssh-copy-id ansible@172.31.14.253:Copies the public key to the second remote host 
+	at 172.31.14.253 for passwordless login.
+
+=>sudo vi /etc/ansible/hosts:Opens or creates the default Ansible inventory file to 
+	define target servers and assign them to groups.
+
+=>sudo cat  /etc/ansible/hosts:Prints the contents of the inventory file to 
+	standard output to verify group definitions:
+
+	[webservers]:defines a group containing host 172.31.10.38.
+	172.31.10.38
+
+	[dbservers]:defines a group containing host 172.31.14.253.
+	172.31.14.253
+
+=>ansible all -m ping:Runs an ad-hoc Ansible command against all inventory hosts 
+	using the ping module (-m ping) to verify SSH connectivity and Python availability on remote hosts.
