@@ -1,0 +1,9 @@
+TO SETUP ANSIBLE
+================
+=>sudo useradd ansible
+=>sudo passwd ansible
+=>sudo visudo
+=>sudo grep -i "ansible" /etc/sudoers
+=>ansible ALL=(ALL)       NOPASSWD:AL
+=>sudo vi /etc/ssh/sshd_config
+=>sudo service sshd restart
