@@ -1,0 +1,57 @@
+Ansible:(Confugation Management)
+=========================
+Configuration management
+-------------------------
+-->copy require file form one machine to another.
+-->Os update and patching
+-->Installing require software in the machine
+
+Limitation associated with manual configuration
+===============================================
+-->error prone (possiblity of human made mistake is high)
+-->Time consuming process
+-->repeatative work
+
+==> to overcome the problems associated with manual configuation can go with
+ 	automation of this configuation management in the project
+==>To automate the config management we have many tools:
+	->ansible
+	->chef 
+	->puppet
+
+
+Ansible
+=========
+==>ansible is open source automation tool used for configuation management,
+	application deployment, orchestration, and IT infrastructure automation.
+==>it is devloped in python language.
+==>control node:where ansible is installed and command are executed.
+==>Manage nodes:system being configured.
+==>inventory-list of managed node.
+==>playbook:file containing automation instrution (written in YAML).
+
+ansible ad-Hoc command
+-----------------------
+==>we have many module in ansible to perform configuation management
+	->ping
+	->shell
+	->copy
+	->yum 
+	->service
+
+==>Ping module:check connectivity between the control node and managed node.
+	->$ ansible all -m ping
+
+shell module:execute shell command in managed nodes
+
+	-->ansible dbservers -m shell -a uptime
+
+yum module(for RHEL/centOS):install update or remove package
+
+	-->ansible webservers -m yum -a "name=git state=present"
+	-->ansible webservers -m yum -b -a "name=git state present"
+	-->ansible webservers -m yum -b -a "name=httpd state present"
+
+	-m:specifies the module
+	-a:specifies the module argument
+	-b:runs with become (sudo) previleges
