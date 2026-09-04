@@ -150,3 +150,13 @@ it contains three section
 	-------
 ==>command to run:ansible-playbook <playbook-filename> "ansible-playbook 
 	01-ping.yml"
+	ansible-playbook <playbook-filename> -v (detailed information)
+	ansible-playbook <playbook-filename> -vv (detailed information include extra task such as debugging, such as variable values and more descriptive output).
+	ansible-playbook <playbook-filename> -vvv (maximum vebrosity, include connection level debugging like full ssh communication "used for deep debugging" ).
+	make ansible run verbose mode it shows more detail about what's happening
+	during execution.
+==>some more command:
+	->ansible-playbook 01-ping.yml --syntax-check (check systax)
+	->ansible-playbook 01-ping.yml --list-hosts (display info about host to be affcted by playbook)
+	->ansible-playbook 01-ping.yml --check (dry run)
+	->ansible-playbook 01-ping.yml --step (confim each task before execution)
