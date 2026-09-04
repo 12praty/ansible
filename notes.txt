@@ -131,3 +131,22 @@ To validate YML syntax : https://www.yamllint.com/
 
 Also we can do same with the help of AI tools
 
+Writing Playbook
+================
+it contains three section
+->host section:represent target manchine. this config depends on ansible inventory 
+	file.
+->varible section:used to declare variables required in playbook execution.
+->task section:define the task activity/opearation which we want to perform on 
+	managed node in ansible.
+
+==>playbook to ping all nodes
+	------
+	- hosts: all
+	  tasks:
+	  - name: ping all managed nodes
+	    ping:
+	    remote_user: ansible
+	-------
+==>command to run:ansible-playbook <playbook-filename> "ansible-playbook 
+	01-ping.yml"
