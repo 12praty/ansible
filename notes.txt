@@ -160,3 +160,4 @@ it contains three section
 	->ansible-playbook 01-ping.yml --list-hosts (display info about host to be affcted by playbook)
 	->ansible-playbook 01-ping.yml --check (dry run)
 	->ansible-playbook 01-ping.yml --step (confim each task before execution)
+

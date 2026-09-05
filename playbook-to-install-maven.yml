@@ -1,0 +1,8 @@
+- hosts: all
+  become: true
+
+  tasks:
+    - name: install mariadb
+      dnf:
+        name: mariadb1011-server
+        state: present
