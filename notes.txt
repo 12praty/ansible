@@ -167,4 +167,5 @@ Handelers And Tags
    order and using the concept of handelers we can execute tasks based on other 
    task status.
    ex:if first task status get change only then execute second task.
-   
+-->command:ansible-playbook 05-tags.yml --tags "install"
+           ansible-playbook 05-tags.yml --skip-tags "install,copy"
