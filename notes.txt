@@ -161,3 +161,10 @@ it contains three section
 	->ansible-playbook 01-ping.yml --check (dry run)
 	->ansible-playbook 01-ping.yml --step (confim each task before execution)
 
+Handelers And Tags
+==================
+==>usually in any playbook all the task get executed by default in sequential 
+   order and using the concept of handelers we can execute tasks based on other 
+   task status.
+   ex:if first task status get change only then execute second task.
+   
