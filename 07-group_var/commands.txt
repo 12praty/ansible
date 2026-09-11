@@ -1,0 +1,17 @@
+ansible-groupVariable/
+==>ansible-playbook -i inventory install.yml --limit webservers
+==>ansible-playbook -i inventory install.yml -l webservers
+==>ansible databases -i inventory -m debug -a "var=package_name"
+==>ansible-playbook -i inventory install.yml
+==>             inventory
+                 |
+       ┌─────────┴─────────┐
+       ↓                   ↓
+ webservers             databases
+       ↓                   ↓
+group_vars/            group_vars/
+webservers.yml         databases.yml
+       ↓                   ↓
+package_name           package_name
+       ↓                   ↓
+   Java                  MariaDB
