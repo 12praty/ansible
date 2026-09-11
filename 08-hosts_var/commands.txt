@@ -1,0 +1,6 @@
+==>ansible webservers -i inventory -m debug -a "var=package_name"
+==>ansible databases -i inventory -m debug -a "var=package_name"
+==>ansible-playbook -i inventory install.yml
+==>ansible-playbook -i inventory install.yml --limit 172.31.14.253
+==>ansible-playbook -i inventory install.yml --limit 172.31.10.38
+==>ansible-playbook -i inventory install.yml -l 172.31.14.253

@@ -177,8 +177,8 @@ variable are used to store data
 =>we have 4 ways to use variable in ansible
   ->runtime variable
   ->playbook variable
-  ->group variable
-  ->hosts variable
+  ->group variable:server specfic variable
+  ->hosts variable:in each server there are many host so this is host specfic
 
 ==>runtime:pass the var at the time of executing
    ----------
