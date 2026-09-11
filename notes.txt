@@ -169,3 +169,79 @@ Handelers And Tags
    ex:if first task status get change only then execute second task.
 -->command:ansible-playbook 05-tags.yml --tags "install"
            ansible-playbook 05-tags.yml --skip-tags "install,copy"
+           ansible-playbook 05-tags.yml --list-tags
+
+Variables
+==========
+variable are used to store data
+=>we have 4 ways to use variable in ansible
+  ->runtime variable
+  ->playbook variable
+  ->group variable
+  ->hosts variable
+
+==>runtime:pass the var at the time of executing
+   ----------
+   - hosts: webservers
+  become: true
+
+  tasks:
+    - name: install httpd package
+      yum:
+        name: {{"package_name"}}
+        state: latest
+      tags: install
+        - install
+
+    - name: copy index.html file
+      copy:
+        src: index.html
+        dest: /var/www/html/index.html
+      tags: copy
+        - copy
+      notify:
+        - start httpd server
+
+  handlers:
+    - name: start httpd server
+      service:
+        name: {{"package_name"}}
+        state: started
+ ----------------------------
+ ==>command: ansible-playbook 06-runtime-variable.yml --extra-vars 
+ 			 package_name=httpd
+
+
+==>playbook:inside playbook
+---------------
+---
+- hosts: webservers
+  become: true
+
+  vars:
+    package_name: httpd
+
+  tasks:
+    - name: install httpd package
+      yum:
+        name: "{{ package_name }}"
+        state: latest
+      tags:
+        - install
+
+    - name: copy index.html file
+      copy:
+        src: index.html
+        dest: /var/www/html/index.html
+      tags:
+        - copy
+      notify:
+        - start httpd server
+
+  handlers:
+    - name: start httpd server
+      service:
+        name: "{{ package_name }}"
+        state: started
+---------------------------------
+==>command: 
