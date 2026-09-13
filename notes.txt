@@ -250,3 +250,54 @@ ansible vault
 ==>ansible-vault decrypt 01-ping.yml {first we have to decrypt that play book then 
     it runs}
 ==>ansible-playbook 01-ping.yml 
+==>ansible-vault view 01-ping.yml {view inside the file}.
+
+ansible roles
+==============
+==>ansible roles are way to organise the playbook into resuable components.
+==>insted of writing a long messy playbook we can break into smaller parts.
+==>(task handelers variable file)
+==>roles make our automation modular, maintainable and resuable.
+==>commands to implement
+------------------------
+$ mkdir roles
+$ cd roles/
+$ ansible-galaxy init apache
+$ sudo yum install tree
+$ tree apache  
+$ ls -l
+$ cd apache/
+$ vi tasks/main.yml
+-------------
+# tasks file for apache
+
+- name: install httpd package
+  yum:
+    name: httpd
+    state: present
+
+- name: start httpd service
+  service:
+    name: httpd
+    state: started
+    enabled: yes
+----------------
+
+
+$ vi files/index.html
+----------------
+<h1>Telusko devops learning</h1>
+----------------
+
+$ handlers/main.yml
+-------------------
+# handlers file for apache
+
+- name: restart httpd
+  service:
+    name: httpd
+    state: restarted
+---------------------
+$ cd ..
+$ cd ..
+$ vi 08-runsetup.yml
