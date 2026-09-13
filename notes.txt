@@ -301,3 +301,10 @@ $ handlers/main.yml
 $ cd ..
 $ cd ..
 $ vi 08-runsetup.yml
+
+what is Ansible Tower
+=====================
+A web-based UI + rest API for managing ansible at scale.
+provides a central place to run playbook, manage inventory, crendentials, and 
+ users.
+ 
