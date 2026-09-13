@@ -244,4 +244,9 @@ variable are used to store data
         name: "{{ package_name }}"
         state: started
 ---------------------------------
-==>command: 
+ansible vault
+=============
+==>ansible-vault encrypt 01-ping.yml {to encrypt my playbook}
+==>ansible-vault decrypt 01-ping.yml {first we have to decrypt that play book then 
+    it runs}
+==>ansible-playbook 01-ping.yml 
