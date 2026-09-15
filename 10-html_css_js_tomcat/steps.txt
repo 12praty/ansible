@@ -38,6 +38,34 @@ Tomcat Setup
 	~/apache-tomcat-9.0.121/bin/startup.sh
 ==>Verify Tomcat is Listening:curl -I http://localhost:8080
 
+Tomcat HTTP Port Configuration
+------------------------------
+Tomcat listens on port `8080` by default. To use a different HTTP port, edit
+the Connector configuration in `conf/server.xml`:
+
+    vi ~/apache-tomcat-9.0.121/conf/server.xml
+
+Find the HTTP Connector entry (it normally looks like this):
+
+    <Connector port="8080" protocol="HTTP/1.1"
+               connectionTimeout="20000"
+               redirectPort="8443" />
+
+Change only the `port` value—for example, to run Tomcat on port `9090`:
+
+    <Connector port="9090" protocol="HTTP/1.1"
+               connectionTimeout="20000"
+               redirectPort="8443" />
+
+Save the file and restart Tomcat for the change to take effect. Then access
+the application using the new port, for example:
+
+    http://<YOUR_PUBLIC_IP>:9090/webapp/
+
+If Tomcat runs on EC2, also allow the chosen TCP port in the instance security
+group. Do not change the `redirectPort="8443"` value unless you are also
+configuring HTTPS.
+
 ==>Stop Tomcat:Shutdown script.Run the shutdown script to stop the running Tomcat 
    server:~/apache-tomcat-9.0.121/bin/shutdown.sh
 ==>Ensure the Process Is Completely Stopped:Kill lingering process (Optional).If 
@@ -87,3 +115,116 @@ Plaintext
 http://<YOUR_PUBLIC_IP>:8080/webapp/
 
 Verification: The page loads with your styled container, heading, and working button that updates text on click.
+
+
+Tomcat Manager GUI Setup (Practice Lab)
+========================================
+
+Purpose
+-------
+Enable the Tomcat Manager web interface so you can deploy and manage applications
+from a browser.
+
+Important: This configuration permits remote access to the Manager app. Use it
+only in a practice environment. In a real deployment, restrict access to trusted
+IP addresses and use a strong, unique password.
+
+1. Go to the Tomcat Manager Context File
+----------------------------------------
+From the webapp directory, return to your home directory and open the Manager
+application configuration:
+
+    cd ~
+    cd apache-tomcat-9.0.121/webapps/manager/META-INF
+    vi context.xml
+
+The default context.xml contains a RemoteCIDRValve similar to this:
+
+    <Valve className="org.apache.catalina.valves.RemoteCIDRValve"
+           allow=".*8" />
+
+For a lab where you need browser access from outside the EC2 instance, replace
+the file contents with the following. This removes the IP-based restriction:
+
+    cat << 'EOF' > ~/apache-tomcat-9.0.121/webapps/manager/META-INF/context.xml
+    <?xml version="1.0" encoding="UTF-8"?>
+    <Context antiResourceLocking="false" privileged="true">
+      <CookieProcessor className="org.apache.tomcat.util.http.Rfc6265CookieProcessor"
+                       sameSiteCookies="unset" />
+      <Manager sessionAttributeValueClassNameFilter="java\\.lang\\.(?:Boolean|Integer|Long|Number|String)|org\\.apache\\.catalina\\.filters\\.CsrfPreventionFilter\$LruCache(?:\$1)?|java\\.util\\.(?:Linked)?HashMap"/>
+    </Context>
+    EOF
+
+Check the result:
+
+    cat ~/apache-tomcat-9.0.121/webapps/manager/META-INF/context.xml
+
+2. Create a Manager User
+------------------------
+Open Tomcat's user configuration file:
+
+    cd ~/apache-tomcat-9.0.121/conf
+    vi tomcat-users.xml
+
+Inside the <tomcat-users> element, add a manager role and a user. Example for a
+practice lab (replace the password before using this outside the lab):
+
+    <role rolename="manager-gui"/>
+    <role rolename="admin-gui"/>
+    <user username="admin" password="adminpassword123" roles="manager-gui,admin-gui"/>
+
+Or replace the complete file with this minimal configuration:
+
+    cat << 'EOF' > ~/apache-tomcat-9.0.121/conf/tomcat-users.xml
+    <?xml version="1.0" encoding="UTF-8"?>
+    <tomcat-users xmlns="http://tomcat.apache.org/xml"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://tomcat.apache.org/xml tomcat-users.xsd"
+                  version="1.0">
+      <role rolename="manager-gui"/>
+      <role rolename="admin-gui"/>
+      <user username="admin" password="adminpassword123" roles="manager-gui,admin-gui"/>
+    </tomcat-users>
+    EOF
+
+3. Restart Tomcat
+-----------------
+Run the scripts from the Tomcat installation directory:
+
+    cd ~/apache-tomcat-9.0.121
+    ./bin/shutdown.sh && sleep 2 && ./bin/startup.sh
+
+Confirm that Tomcat started successfully:
+
+    tail -n 25 ~/apache-tomcat-9.0.121/logs/catalina.out
+
+Look for a line like:
+
+    Server startup in [... ] milliseconds
+
+4. Verify the Manager Application
+---------------------------------
+From the EC2 instance, a 401 response is expected before you authenticate:
+
+    curl -I http://localhost:8080/manager/html
+
+Expected result:
+
+    HTTP/1.1 401
+    WWW-Authenticate: Basic realm="Tomcat Manager Application"
+
+Then open this page in a browser:
+
+    http://<EC2-PUBLIC-IP>:8080/manager/html
+
+Log in with the user you created above.
+
+Common Mistakes to Remember
+---------------------------
+- Use ./bin/startup.sh and ./bin/shutdown.sh; those scripts are not in your home
+  directory or Tomcat's top-level directory.
+- The script is named shutdown.sh, not shurtdown.sh.
+- tomcat-users.xml is a file: edit it with vi or cat; do not use cd on it.
+- Do not create tomcat-users.x by accident. The required file is tomcat-users.xml.
+- If your browser cannot connect, confirm the EC2 security group permits inbound
+  TCP port 8080 from your current IP address.
