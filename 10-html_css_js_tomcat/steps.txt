@@ -1,0 +1,89 @@
+==>Install Maven and Tree:sudo dnf install -y maven tree{Verification: Run-> mvn -v 
+						  and tree --version}
+==>Create the Maven Web Project Folder Structure:mkdir -p ~/webapp/src/main/webapp
+													css ~/webapp/src/main/webapp/js
+													cd ~/webapp
+==>Create the pom.xml File:Build Descriptor.
+  ->What this does: Configures Maven to bundle everything in src/main/webapp into  
+  	webapp.war using maven-war-plugin:3.4.0.
+
+==>Create HTML, CSS, and JS Files:  ├── pom.xml
+									└── src
+									    └── main
+									        └── webapp
+									            ├── css
+									            │ └── style.css
+									            ├── index.html
+									            └── js
+									                └── app.js
+
+    ->vi src/main/webapp/js/app.js
+    ->vi src/main/webapp/css/style.css
+    ->vi src/main/webapp/js/app.js
+
+=>Build the WAR Archive:Packaging.Package the application using Maven:Compiles 
+	assets and bundles the files into a single deployable archive at target/webapp.war.
+	->command:mvn clean package
+==>Deploy the WAR File:Hot deployment.Copy your built package into Tomcat's webapps 
+   directory:cp ~/webapp/target/webapp.war ~/apache-tomcat-9.0.121/webapps/
+
+Tomcat Setup
+============
+==>Install Java Runtime:Prerequisite.Tomcat requires Java to run. Install Amazon 
+   Corretto 17:sudo dnf install -y java-17-amazon-corretto-devel
+==>Download the official Tomcat 9 binary archive into your home folder: cd ~
+	wget https://downloads.apache.org/tomcat/tomcat-9/v9.0.121/bin/apache-tomcat-9.0.121.tar.gz
+==>Extract the Archive:tar -xvzf apache-tomcat-9.0.121.tar.gz
+==>Start Apache Tomcat:Execution.Run the startup script->
+	~/apache-tomcat-9.0.121/bin/startup.sh
+==>Verify Tomcat is Listening:curl -I http://localhost:8080
+
+==>Stop Tomcat:Shutdown script.Run the shutdown script to stop the running Tomcat 
+   server:~/apache-tomcat-9.0.121/bin/shutdown.sh
+==>Ensure the Process Is Completely Stopped:Kill lingering process (Optional).If 
+	Tomcat hangs or doesn't stop after a few seconds, force kill any remaining process:pkill -9 -f tomcat
+==>Start Tomcat Again:Startup script.Execute the startup script to start the server 
+   fresh:~/apache-tomcat-9.0.121/bin/startup.sh
+
+Access from Your Web Browser
+============================
+1
+Get Your New Public IP
+Terminal Check
+Retrieve the public IP assigned to this EC2 instance:
+
+Bash
+curl -s http://checkip.amazonaws.com
+
+Verification: It prints your public IPv4 address to the terminal.
+
+2
+Verify Security Group Port 8080
+AWS Console
+Since this is a new EC2 instance (ip-172-31-10-38):
+
+Open the AWS EC2 Console → Instances.
+
+Select your running instance and open the Security tab.
+
+Click the Security Group link.
+
+Under Inbound rules, ensure there is a rule for:
+
+Port: 8080
+
+Protocol: TCP
+
+Source: 0.0.0.0/0
+
+Verification: The Inbound rules table displays port 8080 enabled for IPv4.
+
+3
+Load the Application
+Web Browser
+Open a browser tab and navigate to:
+
+Plaintext
+http://<YOUR_PUBLIC_IP>:8080/webapp/
+
+Verification: The page loads with your styled container, heading, and working button that updates text on click.
