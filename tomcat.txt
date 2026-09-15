@@ -1,0 +1,211 @@
+============================================================
+             APACHE TOMCAT + MAVEN WEB APP GUIDE
+============================================================
+
+This guide installs Maven, downloads Tomcat 9, builds a simple JSP
+application, deploys it, and makes it reachable on AWS EC2.
+
+------------------------------------------------------------
+STEP 1 — SYSTEM INSPECTION & PACKAGE MANAGEMENT
+------------------------------------------------------------
+
+1. Inspect hardware and block storage
+
+   lsblk
+
+   Lists block devices, partitions, and their mount points. For example,
+   it may show an 8 GB NVMe EBS device: nvme0n1.
+
+2. Check available disk space
+
+   df -h
+
+   Displays total, used, and available filesystem space in MB/GB.
+
+3. Install Apache Maven
+
+   sudo dnf install -y maven
+
+   sudo    Runs the command with administrator privileges.
+   dnf     Red Hat / Amazon Linux package manager.
+   -y      Automatically accepts installation prompts.
+   maven   The package to install, including dependencies such as a JDK.
+
+------------------------------------------------------------
+STEP 2 — DOWNLOAD & SET UP APACHE TOMCAT
+------------------------------------------------------------
+
+1. Download Tomcat 9
+
+   wget https://downloads.apache.org/tomcat/tomcat-9/v9.0.121/bin/apache-tomcat-9.0.121.tar.gz
+
+   Downloads the official Tomcat binary archive to the current directory.
+
+2. Extract the archive
+
+   tar -xvzf apache-tomcat-9.0.121.tar.gz
+
+   -x  Extract files.
+   -v  Show extracted files (verbose output).
+   -z  Decompress gzip content.
+   -f  Use the specified archive filename.
+
+------------------------------------------------------------
+STEP 3 — CREATE THE MAVEN WEB PROJECT
+------------------------------------------------------------
+
+1. Create the standard web application structure
+
+   mkdir -p my-app/src/main/webapp/WEB-INF
+   cd my-app
+
+   mkdir -p creates the complete directory path if it does not exist.
+
+   Expected project structure:
+
+   my-app/
+   ├── pom.xml
+   └── src/
+       └── main/
+           └── webapp/
+               ├── WEB-INF/
+               │   └── web.xml
+               └── index.jsp
+
+2. Create pom.xml
+
+   File: my-app/pom.xml
+
+   <?xml version="1.0" encoding="UTF-8"?>
+   <project xmlns="http://maven.apache.org/POM/4.0.0"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+            http://maven.apache.org/xsd/maven-4.0.0.xsd">
+     <modelVersion>4.0.0</modelVersion>
+     <groupId>com.example</groupId>
+     <artifactId>my-app</artifactId>
+     <version>1.0</version>
+     <packaging>war</packaging>
+     <properties>
+       <maven.compiler.source>17</maven.compiler.source>
+       <maven.compiler.target>17</maven.compiler.target>
+       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+     </properties>
+     <build>
+       <finalName>my-app</finalName>
+       <plugins>
+         <plugin>
+           <groupId>org.apache.maven.plugins</groupId>
+           <artifactId>maven-war-plugin</artifactId>
+           <version>3.4.0</version>
+         </plugin>
+       </plugins>
+     </build>
+   </project>
+
+   The POM declares a WAR package, Java 17, and maven-war-plugin 3.4.0.
+
+3. Create the deployment descriptor
+
+   File: my-app/src/main/webapp/WEB-INF/web.xml
+
+   <?xml version="1.0" encoding="UTF-8"?>
+   <web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
+            http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
+            version="4.0">
+     <display-name>My Simple App</display-name>
+   </web-app>
+
+   This file configures how Tomcat handles the web application.
+
+4. Create the JSP page
+
+   File: my-app/src/main/webapp/index.jsp
+
+   <!DOCTYPE html>
+   <html>
+   <head>
+       <title>Hello Tomcat</title>
+   </head>
+   <body>
+       <h1>Application Deployed Successfully!</h1>
+       <p>Server Time: <%= new java.util.Date() %></p>
+   </body>
+   </html>
+
+   The JSP evaluates server-side Java and renders the current server time.
+
+------------------------------------------------------------
+STEP 4 — BUILD, DEPLOY & RUN
+------------------------------------------------------------
+
+1. Build the WAR file
+
+   mvn clean package
+
+   clean    Removes prior build output (target/).
+   package  Compiles, tests, and creates target/my-app.war.
+
+2. Deploy the WAR to Tomcat
+
+   cp target/my-app.war ~/apache-tomcat-9.0.121/webapps/
+
+   Tomcat detects the WAR, extracts it as my-app/, and deploys it.
+
+3. Start Tomcat
+
+   ~/apache-tomcat-9.0.121/bin/startup.sh
+
+4. Verify the server and application
+
+   ps aux | grep tomcat
+   curl http://localhost:8080/my-app/
+
+   The first command checks for a Tomcat process; the second requests
+   the application on Tomcat's default port, 8080.
+
+------------------------------------------------------------
+STEP 5 — AWS NETWORKING & FIREWALL
+------------------------------------------------------------
+
+If the browser shows ERR_CONNECTION_TIMED_OUT, port 8080 is probably
+blocked by the EC2 Security Group. AWS instances run inside a VPC, and
+Security Groups act as stateful virtual firewalls. By default, only SSH
+(port 22) may be open.
+
+In the AWS EC2 Console:
+
+   EC2 Console → Instances → Security → select the Security Group
+   → Edit inbound rules → Add rule
+
+   Type:       Custom TCP
+   Port range: 8080
+   Source:     0.0.0.0/0  (Anywhere-IPv4)
+
+Then browse to:
+
+   http://<EC2-PUBLIC-IP>:8080/my-app/
+
+Example: http://13.233.153.114:8080/my-app/
+
+Security note: 0.0.0.0/0 exposes the application to the internet. For
+production, restrict the source range or use a reverse proxy/load balancer
+with HTTPS.
+
+------------------------------------------------------------
+DAY-TO-DAY TOMCAT COMMANDS
+------------------------------------------------------------
+
+Stop Tomcat
+   ~/apache-tomcat-9.0.121/bin/shutdown.sh
+
+Start Tomcat
+   ~/apache-tomcat-9.0.121/bin/startup.sh
+
+View live logs
+   tail -f ~/apache-tomcat-9.0.121/logs/catalina.out
+
+Check whether port 8080 is listening
+   ss -tulpn | grep 8080

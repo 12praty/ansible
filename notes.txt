@@ -308,3 +308,20 @@ A web-based UI + rest API for managing ansible at scale.
 provides a central place to run playbook, manage inventory, crendentials, and 
  users.
  
+Tomcat
+=======
+Webserver
+---------
+==>software is used to run our web app and users accross the globe
+    with internet can access our app by sending a request to server.
+==>user will use client software or web browser and send request to 
+   server.
+==>server is responsible to handel request and response.
+==>ex: Tomcat, JBoss, Glassfish, Weblogic, IIS, Websphere.
+==>the process of executing web application by using server is called deployment.
+
+Tomcat
+-------
+==>its free and open source software which is developed by apchae organization.
+==>Tomcat server is developed using java to run tomcat java is required.
+==>tomcat support multiple operating system.  
